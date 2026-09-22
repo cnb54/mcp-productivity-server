@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "personal-productivity-server": {
+      "command": "/Users/christina/Documents/GitHub/mcp-productivity-server/.venv/bin/python3",
+      "args": [
+        "/Users/christina/Documents/GitHub/mcp-productivity-server/server.py"
+      ]
+    }
+  }
+}

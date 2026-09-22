@@ -1,0 +1,20 @@
+# --- Secrets ---
+.env
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# --- Local data (created at runtime) ---
+*.db
+*.log
+
+# --- OS / Editor ---
+.DS_Store
+.vscode/
+.idea/
