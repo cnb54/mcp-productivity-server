@@ -79,14 +79,35 @@ def validate_email_address(address: str) -> str:
     return address
 
 
-def validate_email_text(value: str, field_name: str) -> str:
-    """Email subject/body: reject embedded CR/LF (the header/content-injection vector)."""
+def validate_email_header_text(value: str, field_name: str) -> str:
+    """
+    For values that become an EMAIL HEADER (currently: subject). Reject
+    embedded CR/LF -- this is the actual header-injection vector, since a
+    newline inside a header value could be used to smuggle in a fake extra
+    header (like a hidden Bcc:).
+    """
     if not isinstance(value, str):
         raise ValueError(f"{field_name} must be a string.")
     if _CRLF_RE.search(value):
         raise ValueError(f"{field_name} cannot contain raw newline characters.")
-    if len(value) > MAX_TEXT_LEN * 4:
+    if len(value) > MAX_TEXT_LEN:
         raise ValueError(f"{field_name} is too long.")
+    return value
+
+
+def validate_email_body(value: str) -> str:
+    """
+    For the email BODY. Newlines are perfectly normal here (paragraph
+    breaks) and are NOT a header-injection risk: the body is written via
+    EmailMessage.set_content(), which always places it after the header
+    section, so embedded newlines can't be used to forge additional
+    headers the way they could in a header value. We only guard against
+    unreasonably large input.
+    """
+    if not isinstance(value, str):
+        raise ValueError("body must be a string.")
+    if len(value) > MAX_TEXT_LEN * 4:
+        raise ValueError("body is too long.")
     return value
 
 

@@ -27,7 +27,8 @@ from security import (
     safe_tool_call,
     validate_due_date,
     validate_email_address,
-    validate_email_text,
+    validate_email_body,
+    validate_email_header_text,
     validate_priority,
     validate_title,
 )
@@ -81,8 +82,8 @@ def send_task_reminder_email(recipient_email: str, subject: str, body: str) -> d
         body: Email body text.
     """
     clean_recipient = validate_email_address(recipient_email)
-    clean_subject = validate_email_text(subject, "subject")
-    clean_body = validate_email_text(body, "body")
+    clean_subject = validate_email_header_text(subject, "subject")
+    clean_body = validate_email_body(body)
 
     email_utils.send_email(clean_recipient, clean_subject, clean_body)
     logger.info("Reminder email sent to %s", clean_recipient)

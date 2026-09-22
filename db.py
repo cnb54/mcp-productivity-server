@@ -17,7 +17,18 @@ from pathlib import Path
 def _db_path() -> Path:
     # Read the env var lazily (not at import time) so tests/exploits can
     # override TASKS_DB_PATH before the first real database call.
-    return Path(os.getenv("TASKS_DB_PATH", "tasks.db"))
+    #
+    # A RELATIVE path (the default, "tasks.db") is resolved against this
+    # file's own folder, not against the current working directory. This
+    # matters because an MCP client (like Claude Desktop) launches this
+    # server as a subprocess from its own working directory, not from
+    # inside this project folder -- without this, sqlite3 would try to
+    # create "tasks.db" in some unrelated folder and fail with
+    # "unable to open database file".
+    raw_path = Path(os.getenv("TASKS_DB_PATH", "tasks.db"))
+    if raw_path.is_absolute():
+        return raw_path
+    return Path(__file__).parent / raw_path
 
 
 def get_connection() -> sqlite3.Connection:
